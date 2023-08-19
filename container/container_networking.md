@@ -101,11 +101,15 @@ $ python3 -m http.server --bind 172.18.0.10 5000
 
 -> Run the server inside one of container network namespace. Then try reaching to it from host, we will get a respose since 
 host is aware about how to route to the container namespace.
+
 -> However of we try reaching to server from another machine. First question will come to mind on which ip we should make the
 request. since container ip is private and not visible to the outside world. So let's make request to the host ip 10.0.2.15   and port 5000. We will not get any response. Therefore as of now our container namespace is not rechable from outside of host.
+
 -> Since outside world can see the host ip not the container ip. We have to publish the container port on some host port. That means somehow we have to map the container port to a specific host port. And whenever a packet will come to host port mapped to container port. We will forward the packet to conatiner port. This way even the outside world will able to access the our  contaner.
+
 ----- We will be using following iptables command to do the port forwarding --------- 
 External traffic 
+
 $ sudo iptables -t nat -A PREROUTING -d 10.0.2.15 -p tcp -m tcp --dport 5000 -j DNAT --to-destination 172.18.0.10:5000
 
 Local traffic (since it does not pass the PREROUTING chain)
